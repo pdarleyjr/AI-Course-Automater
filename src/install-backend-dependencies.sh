@@ -14,7 +14,7 @@ fi
 
 # Install any missing dependencies
 echo "Installing required packages..."
-npm install express cors ws uuid winston @playwright/test axios dotenv langchain
+npm install express cors ws uuid winston @playwright/test axios dotenv langchain pg
 
 # Install nodemon for development
 echo "Installing development dependencies..."

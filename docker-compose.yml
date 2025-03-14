@@ -21,22 +21,33 @@ services:
   postgres:
     image: postgres:14-alpine
     user: "1000:1000"  # Use a non-root user to avoid permission issues
-    restart: always
+    restart: unless-stopped
     # comment out if you want to externally connect DB
     # ports:
     #   - 5432:5432
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      - PGDATA=/var/lib/postgresql/data/pgdata
-      - POSTGRES_USER=skyvern
-      - POSTGRES_PASSWORD=skyvern
-      - POSTGRES_POSTGRES_DB=skyvern
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_USER: skyvern
+      POSTGRES_PASSWORD: skyvern
+      POSTGRES_DB: skyvern  # Fixed typo in variable name
+      # Performance tuning parameters
+      POSTGRES_SHARED_BUFFERS: 128MB  # 25% of available RAM for small instances
+      POSTGRES_EFFECTIVE_CACHE_SIZE: 384MB  # 75% of available RAM for small instances
+      POSTGRES_WORK_MEM: 4MB  # Reasonable default for small instances
+      POSTGRES_MAINTENANCE_WORK_MEM: 32MB  # For maintenance operations
+      POSTGRES_MAX_CONNECTIONS: 100  # Default is usually fine for small instances
+      # Logging parameters
+      POSTGRES_LOG_MIN_DURATION_STATEMENT: 250  # Log slow queries (>250ms)
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U skyvern"]
-      interval: 5s
+      interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 3
+      start_period: 30s  # Give PostgreSQL time to start up
+    networks:
+      - app-network
 
   skyvern:
     image: public.ecr.aws/skyvern/skyvern:latest
@@ -51,7 +62,7 @@ services:
       - ./log:/data/log
       - ./.streamlit:/app/.streamlit
     environment:
-      - DATABASE_STRING=postgresql+psycopg://skyvern:skyvern@postgres:5432/skyvern
+      - DATABASE_STRING=postgresql+psycopg://skyvern:skyvern@postgres:5432/skyvern?sslmode=disable
       - BROWSER_TYPE=chromium-headful
       - ENABLE_OPENAI=true
       - LLM_KEY=OPENAI_GPT4O
@@ -63,6 +74,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    networks:
+      - app-network
     healthcheck:
       test: ["CMD", "test", "-f", "/app/.streamlit/secrets.toml"]
       interval: 5s
@@ -85,6 +98,8 @@ services:
     depends_on:
       skyvern:
         condition: service_healthy
+    networks:
+      - app-network
 
   # Playwright automation service
   playwright:
@@ -102,12 +117,16 @@ services:
       - PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
       - SKYVERN_API_URL=http://skyvern:8000
       - SKYVERN_UI_URL=http://skyvern-ui:8080
+      - DB_HOST=postgres
+      - DB_PORT=5432
     depends_on:
       skyvern:
         condition: service_healthy
       skyvern-ui:
         condition: service_started
     command: bash -c "cd /app && chmod +x install-dependencies.sh && ./install-dependencies.sh && tail -f /dev/null"  # Install dependencies and keep container running
+    networks:
+      - app-network
 
   # Express.js backend API service
   backend-api:
@@ -129,6 +148,12 @@ services:
       - SKYVERN_API_URL=http://skyvern:8000
       - SKYVERN_UI_URL=http://skyvern-ui:8080
       - OPENAI_API_KEY=${OPENAI_API_KEY:-your_openai_api_key}
+      # Database connection environment variables
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=skyvern
+      - DB_USER=skyvern
+      - DB_PASSWORD=skyvern
     depends_on:
       - playwright
       - skyvern
@@ -138,11 +163,13 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+    networks:
+      - app-network
 
   # LangChain AI service
   langchain-js:
     image: mcr.microsoft.com/playwright:v1.42.1-focal
-  # Using Playwright image as base for Node.js
+    # Using Playwright image as base for Node.js
     restart: unless-stopped
     volumes:
       - ./src:/app
@@ -158,6 +185,8 @@ services:
       skyvern:
         condition: service_healthy
     command: bash -c "cd /app && chmod +x install-dependencies.sh && ./install-dependencies.sh && tail -f /dev/null"  # Install dependencies and keep container running
+    networks:
+      - app-network
 
   # LangChain Python service
   langchain-py:
@@ -178,6 +207,8 @@ services:
         condition: service_healthy
     # Install Python dependencies and keep container running
     command: bash -c "pip install -U langchain langchain-openai playwright && python -m playwright install && tail -f /dev/null"
+    networks:
+      - app-network
 
   # Terminal-themed React Web UI for authentication
   webui:
@@ -201,7 +232,14 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+    networks:
+      - app-network
 
 volumes:
   postgres_data:
     # Using a named volume instead of a bind mount to avoid permission issues
+    # This ensures data persistence across container restarts and rebuilds
+
+networks:
+  app-network:
+    driver: bridge
