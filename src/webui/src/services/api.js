@@ -1,4 +1,5 @@
 import axios from 'axios';
+import websocketService from './websocket';
 
 // Create an axios instance with default config
 const api = axios.create({
@@ -26,7 +27,13 @@ const endpoints = {
  */
 export const startAutomation = async (credentials) => {
   try {
-    const response = await api.post(endpoints.startAutomation, credentials);
+    // Include the client ID for WebSocket association
+    const payload = {
+      ...credentials,
+      clientId: websocketService.getClientId()
+    };
+    
+    const response = await api.post(endpoints.startAutomation, payload);
     return response.data;
   } catch (error) {
     console.error('Error starting automation:', error);
@@ -40,7 +47,9 @@ export const startAutomation = async (credentials) => {
  */
 export const stopAutomation = async () => {
   try {
-    const response = await api.post(endpoints.stopAutomation);
+    const response = await api.post(endpoints.stopAutomation, {
+      clientId: websocketService.getClientId()
+    });
     return response.data;
   } catch (error) {
     console.error('Error stopping automation:', error);
@@ -54,7 +63,7 @@ export const stopAutomation = async () => {
  */
 export const getAutomationStatus = async () => {
   try {
-    const response = await api.get(endpoints.status);
+    const response = await api.get(`${endpoints.status}?clientId=${websocketService.getClientId()}`);
     return response.data;
   } catch (error) {
     console.error('Error getting automation status:', error);
