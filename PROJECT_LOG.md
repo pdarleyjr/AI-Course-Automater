@@ -4,6 +4,15 @@ This log tracks all progress and activities related to the AI-Course-Automater p
 
 ## 2025-03-14
 
+### Development: Dependency Management
+
+- Created install-dependencies.sh script for automated dependency installation
+- Updated docker-compose.yml to properly install dependencies in containers
+- Fixed module resolution issues for @playwright/test
+- Added comprehensive documentation for dependency installation
+- Updated container startup commands to ensure all dependencies are installed
+- Added troubleshooting information for common dependency issues
+
 ### Development: LangChain Integration
 
 - Added LangChain to the project for intelligent automation capabilities
@@ -93,6 +102,6 @@ This log tracks all progress and activities related to the AI-Course-Automater p
 - [ ] Create LMS integration module
 - [x] Develop assignment submission system
 - [ ] Build reporting and monitoring dashboard
-- [ ] Implement error handling and recovery
+- [x] Implement error handling and recovery
 - [ ] Create user interface for configuration
 - [ ] Set up CI/CD pipeline for deployment

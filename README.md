@@ -49,6 +49,15 @@ AI-Course-Automater/
    LMS_USERNAME=your_username
    LMS_PASSWORD=your_password
    ```
+4. Install dependencies:
+   
+   The project includes a script to install all necessary dependencies:
+   ```bash
+   cd src
+   chmod +x install-dependencies.sh
+   ./install-dependencies.sh
+   ```
+
 3. Access the Admin UI:
    
    When your docker container is running, connect to it on port 81 for the admin interface:
@@ -103,6 +112,13 @@ To run the Python examples:
 ```
 cd src
 python examples/langchain_example.py
+```
+
+### Troubleshooting Dependencies
+
+If you encounter errors related to missing modules (e.g., `Cannot find module '@playwright/test'`), run:
+```bash
+npm install --save-dev @playwright/test
 ```
 
 ### Project Log

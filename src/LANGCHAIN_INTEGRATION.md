@@ -34,6 +34,19 @@ LMS_USERNAME=your_username
 LMS_PASSWORD=your_password
 ```
 
+### Installing Dependencies
+
+The project includes a script to install all necessary dependencies:
+
+```bash
+# Make the script executable
+chmod +x install-dependencies.sh
+# Run the script
+./install-dependencies.sh
+```
+
+This script will install all required Node.js and Python dependencies, including Playwright and LangChain.
+
 ## JavaScript Implementation
 
 The JavaScript implementation is located in `src/utils/langchain-utils.js` and provides the following functions:
@@ -120,11 +133,25 @@ You can adjust the model parameters (like temperature) in the implementation fil
 ### Common Issues
 
 1. **API Key Issues**: Ensure your OpenAI API key is correctly set in the environment variables
+
 2. **Dependency Issues**: If you encounter dependency issues, try rebuilding the containers:
    ```bash
    docker-compose build --no-cache langchain-js langchain-py
    ```
+
 3. **Memory Issues**: If you encounter memory issues with large course content, try adjusting the Docker resource limits
+
+4. **Missing Module Errors**: If you see errors like `Cannot find module '@playwright/test'`, try:
+   ```bash
+   # Run the dependency installation script
+   ./install-dependencies.sh
+   
+   # Or manually install the specific dependency
+   npm install --save-dev @playwright/test
+   
+   # Then restart the containers
+   docker-compose restart
+   ```
 
 ### Logs
 
