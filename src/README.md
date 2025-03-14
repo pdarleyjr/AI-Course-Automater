@@ -41,6 +41,63 @@ To start developing automation scripts:
 The automation project will use:
 
 - JavaScript/Node.js for scripting
-- Puppeteer for web automation
+- Playwright for web automation
 - Axios for API requests
 - Winston for logging
+
+## Playwright Automation
+
+This project uses Playwright for web automation. Playwright is a powerful framework that allows testing and automation across all modern browsers (Chromium, Firefox, and WebKit).
+
+### Directory Structure
+
+The Playwright-specific files are organized as follows:
+
+```
+src/
+├── playwright.config.js  # Playwright configuration
+├── tests/                # Playwright test files
+│   └── example.spec.js   # Example test
+└── core/
+    └── lms-automation.js # Core LMS automation logic
+```
+
+### Running Tests
+
+To run Playwright tests:
+
+```bash
+# Inside the Docker container
+cd /app
+npm test
+
+# Run with UI mode
+npm run test:ui
+
+# Run with headed browsers
+npm run test:headed
+
+# Generate code with Playwright Codegen
+npm run codegen
+```
+
+### Viewing Reports
+
+After running tests, you can view the HTML report:
+
+```bash
+npm run report
+```
+
+The report will be available in the `artifacts/playwright-report` directory.
+
+### Using Playwright with Skyvern
+
+The Playwright automation is configured to work alongside Skyvern. While Skyvern provides AI-powered automation, Playwright gives you more fine-grained control for specific automation tasks.
+
+You can use both tools together:
+
+1. Use Skyvern for complex, AI-driven tasks
+2. Use Playwright for scripted, deterministic automation
+
+The `utils/skyvern-api.js` file provides helper functions to interact with the Skyvern API from your Playwright scripts.
