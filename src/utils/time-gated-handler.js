@@ -4,6 +4,7 @@
 const winston = require('winston');
 const config = require('../config/default');
 
+const contextExtractor = require('./course-context-extractor');
 // Configure logger
 const logger = winston.createLogger({
   level: config.logging.level,
@@ -95,6 +96,14 @@ async function detectTimeRequirements(page, logCallback = null) {
       }
     }
 
+    // Check for Target Solutions specific time indicators
+    const tsTimeIndicator = await page.evaluate(() => {
+      const pageCounter = document.querySelector('.page-counter');
+      return pageCounter ? pageCounter.textContent.trim() : '';
+    });
+    
+    sendLog(`Page counter: ${tsTimeIndicator}`, 'info');
+
     // If no explicit timer found, check for video elements
     if (!timeRequirement) {
       const videoElement = await page.$('video');
@@ -116,6 +125,33 @@ async function detectTimeRequirements(page, logCallback = null) {
           
           sendLog(`Detected video with duration: ${Math.ceil(duration)} seconds`, 'info');
         }
+      }
+    }
+
+    // Check for Target Solutions specific video player
+    if (!timeRequirement) {
+      const hasTargetSolutionsVideo = await page.evaluate(() => {
+        // Check for iframe that might contain video
+        const iframes = document.querySelectorAll('iframe');
+        for (const iframe of iframes) {
+          if (iframe.src && (iframe.src.includes('video') || iframe.src.includes('media'))) {
+            return true;
+          }
+        }
+        
+        // Check for video container divs
+        return !!document.querySelector('.video-container, .media-player, .ts-video');
+      });
+      
+      if (hasTargetSolutionsVideo) {
+        timeRequirement = {
+          detected: true,
+          milliseconds: 120 * 1000, // 2 minutes default for Target Solutions videos
+          text: 'Target Solutions Video',
+          source: 'ts-video',
+          isVideo: true
+        };
+        sendLog('Detected Target Solutions video player', 'info');
       }
     }
 
@@ -186,6 +222,9 @@ async function waitWithUpdates(durationMs, logCallback = null, page = null) {
     const randomizedDuration = durationMs + (Math.random() * 2000 - 1000); // +/- 1 second
     
     sendLog(`Waiting for ${Math.ceil(randomizedDuration / 1000)} seconds to satisfy time requirement...`);
+    
+    // Store page information for quiz context while waiting
+    await contextExtractor.storePageInformation(page, logCallback);
     
     const startTime = Date.now();
     const updateInterval = 10000; // Update every 10 seconds
@@ -294,6 +333,9 @@ async function handleVideoContent(page, logCallback = null) {
 
     sendLog('Video content detected. Ensuring playback...', 'info');
 
+    // Store video page information for quiz context
+    await contextExtractor.storePageInformation(page, logCallback);
+
     // Try to play the video
     await page.evaluate(() => {
       const video = document.querySelector('video');
@@ -323,6 +365,42 @@ async function handleVideoContent(page, logCallback = null) {
     if (playButton) {
       sendLog('Clicking play button...', 'info');
       await playButton.click();
+    }
+
+    // Check for Target Solutions specific video controls
+    const tsPlayButton = await page.$('.ts-play-button, .play-control, [aria-label="Play"]');
+    if (tsPlayButton) {
+      sendLog('Clicking Target Solutions play button...', 'info');
+      await tsPlayButton.click();
+    }
+    
+    // Check for iframe that might contain video
+    const videoIframe = await page.$('iframe[src*="video"], iframe[src*="media"]');
+    if (videoIframe) {
+      sendLog('Found video iframe, attempting to interact with it...', 'info');
+      
+      try {
+        // Switch to iframe
+        const frame = await videoIframe.contentFrame();
+        
+        if (frame) {
+          // Try to find and click play button in iframe
+          const iframePlayButton = await frame.$('button.play-button, .vjs-play-button, .play-control, [aria-label="Play"]');
+          if (iframePlayButton) {
+            sendLog('Clicking play button in video iframe...', 'info');
+            await iframePlayButton.click();
+          }
+          
+          // Wait for video to play
+          await frame.waitForTimeout(2000);
+          
+          // Switch back to main frame
+          await page.focus('body');
+        }
+      } catch (iframeError) {
+        sendLog(`Error interacting with video iframe: ${iframeError.message}`, 'warning');
+        // Continue with normal flow
+      }
     }
 
     // Check if video is playing
@@ -397,6 +475,9 @@ async function handleVideoContent(page, logCallback = null) {
       } else {
         // For videos with unknown duration, wait for a reasonable time
         sendLog('Video has unknown duration. Waiting for 2 minutes...', 'info');
+        
+        // Store video information for quiz context
+        await contextExtractor.storePageInformation(page, logCallback);
         await waitWithUpdates(120000, logCallback, page);
       }
       
@@ -404,6 +485,9 @@ async function handleVideoContent(page, logCallback = null) {
     } else {
       sendLog('Unable to play video automatically. Waiting for default time...', 'warning');
       await waitWithUpdates(60000, logCallback, page); // Wait for 1 minute as fallback
+      
+      // Store page information for quiz context even if video doesn't play
+      await contextExtractor.storePageInformation(page, logCallback);
       return false;
     }
   } catch (error) {
@@ -424,6 +508,7 @@ async function isNextButtonEnabled(page) {
     const nextButtonSelectors = [
       'button:has-text("Next")',
       'a:has-text("Next")',
+      '#nextA', // Target Solutions specific
       '.next-button',
       '.btn-next',
       '[aria-label="Next"]',
@@ -431,6 +516,7 @@ async function isNextButtonEnabled(page) {
       'button:has-text("Continue")',
       'a:has-text("Continue")'
     ];
+
     
     for (const selector of nextButtonSelectors) {
       const button = await page.$(selector);
@@ -438,7 +524,8 @@ async function isNextButtonEnabled(page) {
         // Check if the button is enabled
         const isDisabled = await button.evaluate(el => {
           return el.disabled || 
-                 el.getAttribute('aria-disabled') === 'true' || 
+                 el.getAttribute('aria-disabled') === 'true' ||
+                 el.getAttribute('disabled') === 'disabled' ||
                  el.classList.contains('disabled') ||
                  getComputedStyle(el).opacity < 0.5;
         });
@@ -499,6 +586,55 @@ async function waitForNextButtonEnabled(page, logCallback = null, timeoutMs = 30
   }
 }
 
+/**
+ * Detect and handle Target Solutions specific navigation
+ * @param {import('playwright').Page} page - Playwright page object
+ * @param {Function} logCallback - Callback for sending logs to the client
+ * @returns {Promise<boolean>} - Whether navigation was successful
+ */
+async function handleTargetSolutionsNavigation(page, logCallback = null) {
+  try {
+    const sendLog = (message, type = 'info') => {
+      logger.info(message);
+      if (logCallback) logCallback(message, type);
+    };
+
+    sendLog('Checking for Target Solutions navigation elements...', 'info');
+    
+    // Store page information for quiz context
+    await contextExtractor.storePageInformation(page, logCallback);
+    
+    // Check for Target Solutions next button
+    const nextButton = await page.$('#nextA, a.navLink[id="nextA"]');
+    if (nextButton) {
+      // Check if the button is enabled
+      const isDisabled = await nextButton.evaluate(el => {
+        return el.disabled || 
+               el.getAttribute('aria-disabled') === 'true' || 
+               el.getAttribute('disabled') === 'disabled' ||
+               el.classList.contains('disabled') ||
+               el.title.includes('must complete') ||
+               getComputedStyle(el).opacity < 0.5;
+      });
+      
+      if (!isDisabled) {
+        sendLog('Clicking Target Solutions "Next" button...', 'info');
+        await nextButton.click();
+        await page.waitForLoadState('domcontentloaded');
+        return true;
+      } else {
+        sendLog('Target Solutions "Next" button is disabled', 'warning');
+      }
+    }
+    
+    return false;
+  } catch (error) {
+    logger.error('Error handling Target Solutions navigation:', error);
+    if (logCallback) logCallback(`Error handling Target Solutions navigation: ${error.message}`, 'error');
+    return false;
+  }
+}
+
 module.exports = {
   detectTimeRequirements,
   waitWithUpdates,
@@ -506,4 +642,6 @@ module.exports = {
   handleVideoContent,
   isNextButtonEnabled,
   waitForNextButtonEnabled
+,
+  handleTargetSolutionsNavigation
 };

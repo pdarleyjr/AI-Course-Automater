@@ -1,0 +1,849 @@
+
+
+	<!DOCTYPE HTML>
+	<!--[if IE 7]> <html lang="en" class="ie7"> <![endif]-->
+	<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
+	<!--[if (gt IE 8)|!(IE)]><!--> <html lang="en"> <!--<![endif]-->
+	<head>
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	    <meta charset="utf-8">
+	    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+	    <title>
+	        Vector Solutions |
+	        Miami Beach Fire Rescue 
+	    </title>
+
+	    <link rel="stylesheet" href="/tsapp/dashboard/pl_fb/library/css/pro/reset.css?v=1042" />
+		<link rel="stylesheet" href="/tsapp/dashboard/pl_fb/library/css/pro/icons.css?v=1042" />
+	    <link rel="stylesheet" href="/tsapp/dashboard/pl_fb/library/css/pro/common.css?v=1042" />
+		<link rel="stylesheet" href="/tsapp/dashboard/pl_fb/library/css/pro/font-awesome.css?v=1042">
+		<link rel="stylesheet" href="/tsapp/dashboard/pl_fb/library/css/pro/v4-shims.css?v=1042">
+		<link rel="stylesheet" href="/tsapp/dashboard/pl_fb/library/css/pro/crewsense-icon.css?v=1042">
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+		
+	                <link rel="stylesheet" href="/assets/less/pro/themes/fire.css?v=1042">
+	            
+	  		<script src="/tsapp/dashboard/pl_fb/library/scripts/jquery-1.7.min.js?v=1042"></script>
+	        <script src="/tsapp/dashboard/pl_fb/library/scripts/jquery-migrate-1.2.1.min.js?v=1042"></script>
+	    	<script src="/tsapp/dashboard/pl_fb/library/scripts/preventionLink/tsapp.js?v=1042"></script>
+			<script src="/tsapp/dashboard/pl_fb/library/scripts/jquery.blockui.js?v=1042"></script>
+		
+		<script src="/assets/js/transition.js?v=1042"></script>
+		<script src="/assets/js/tendina.min.js?v=1042"></script>
+		
+
+<!-- Google tag (gtag.js) -->
+ 
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-H6ZEXNYGYX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-H6ZEXNYGYX');
+
+</script>
+<script>
+window['_fs_debug'] = false;
+window['_fs_host'] = 'fullstory.com';
+window['_fs_script'] = 'edge.fullstory.com/s/fs.js';
+window['_fs_org'] = 'o-1RKVN1-na1';
+window['_fs_namespace'] = 'FS';
+(function(m,n,e,t,l,o,g,y){
+    if (e in m) {if(m.console && m.console.log) { m.console.log('FullStory namespace conflict. Please set window["_fs_namespace"].');} return;}
+    g=m[e]=function(a,b,s){g.q?g.q.push([a,b,s]):g._api(a,b,s);};g.q=[];
+    o=n.createElement(t);o.async=1;o.crossOrigin='anonymous';o.src='https://'+_fs_script;
+    y=n.getElementsByTagName(t)[0];y.parentNode.insertBefore(o,y);
+    g.identify=function(i,v,s){g(l,{uid:i},s);if(v)g(l,v,s)};g.setUserVars=function(v,s){g(l,v,s)};g.event=function(i,v,s){g('event',{n:i,p:v},s)};
+    g.anonymize=function(){g.identify(!!0)};
+    g.shutdown=function(){g("rec",!1)};g.restart=function(){g("rec",!0)};
+    g.log = function(a,b){g("log",[a,b])};
+    g.consent=function(a){g("consent",!arguments.length||a)};
+    g.identifyAccount=function(i,v){o='account';v=v||{};v.acctId=i;g(o,v)};
+    g.clearUserCookie=function(){};
+    g.setVars=function(n, p){g('setVars',[n,p]);};
+    g._w={};y='XMLHttpRequest';g._w[y]=m[y];y='fetch';g._w[y]=m[y];
+    if(m[y])m[y]=function(){return g._w[y].apply(this,arguments)};
+    g._v="1.3.0";
+})(window,document,window['_fs_namespace'],'script','user');
+</script>
+
+
+
+<script>
+	var ChurnZero = ChurnZero || [];
+	(function() {
+		var cz = document.createElement('script'); cz.type = 'text/javascript';
+		cz.async = true;
+		cz.src = 'https://analytics.churnzero.net/churnzero.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(cz, s);
+	})();
+</script>
+
+
+<script>
+	
+		ChurnZero.push(['setAppKey', '1!UGZdqDqgxPCb1lTsMTl-LWumEm0GZta6j3o0wT6QY-4t9EF']); // AppKey from ChurnZero
+		ChurnZero.push(['setContact', '0014100000iwkVVAAY', 'PeterDarley@miamibeachfl.gov']);
+
+		
+			var churnEvents = [];
+			ChurnZero.push(['ChurnZeroEvent:on', 'connected', function (data) { 
+				churnEvents.forEach(function(element){
+					ChurnZero.push(['trackEvent', element.name,element.description, element.count, element.data]);
+				});
+			}]);
+		
+
+</script>
+
+		<style>
+			#navLeft .fa-2x {font-size:1.9em;}
+		</style>
+	</head>
+	<body class="">
+	    <div id="wrapper">
+	    	<div id="container">
+	             <div id="header">
+	                <div id="navOptions" class="navbar navbar-inverse">
+					  <div class="container">
+	                    <div class="optionsLeft">
+	                    	
+	                        	<div class="text">
+		                        	Miami Beach Fire Rescue
+	                            </div>
+	                        
+	                    </div>
+	                    <div class="optionsRight">					
+							
+
+		                        <a id="notificationUser" href="index.cfm?fuseaction=c_pro.getNotificationPreview&type=user&v=0.291895312598" title="Notifications" class="notif notifSelf">
+		                            <i class="fa fa-user fa-lg fa-fw"></i>
+		                            <span class="badge">0</span>
+		                        </a>
+
+		                        
+		                        
+	                        <ul id="nav-user-menu" class="dropdown-menu">
+	                            <li><a href=""> Peter Darley <i class="fas fa-caret-down fa-fw"></i></a></li>
+	                            <ul id="nav-user-sub-menu" class="dropdown-sub-menu">
+	                                <li><a href="index.cfm?fuseaction=c_pro_profile.showHome">My Profile</a></li>
+	                                
+	                                <li><a href="/tsapp/1logoutform.cfm">Sign Out</a></li>
+	                            </ul>
+	                        </ul>
+	                    </div>
+					  </div>
+	                </div>
+	                <div id="navTop" class="navbar navbar-default">
+					  <div class="container">
+	                    <div id="navTop-menu">
+	                        <ul>
+	                            <li class='selected'><a href="/tsapp/dashboard/pl_fb/index.cfm?fuseaction=c_pro.showHome" > <span class="text text">Home</span></a></li><li><a href="/tsapp/dashboard/pl_fb/index.cfm?fuseaction=c_pro_assignments.showDashboard" > <span class="text text">Administration</span></a></li><li><a href="/tsapp/dashboard/pl_fb/index.cfm?fuseaction=c_pro_src.showHome" > <span class="text text">Community Resources</span></a></li><li><a href="https://support.vectorlmstargetsolutionsedition.com" target="_blank"> <span class="text text">Help</span></a></li>
+	                        </ul>
+	                    </div>
+					  </div>
+	                </div>
+	            </div>
+	            
+				<div id="body-content" class="">
+	                            
+	                                <div id="navLeft">
+	                                    
+												<div id="logo">
+		                                            
+		                                            
+		                                            <h3 style="background-image: url(https://s3.amazonaws.com/tscustomers.targetsafety.com/B0F2D490-E0E0-0F28-85CC86BB7DADAFF3.png?v=); -moz-border-radius: 10px; border-radius: 10px; -webkit-border-radius: 10px;">
+		                                            	
+		                                                	<span class="nameViewable">
+		                                                    	
+		                                                    </span>
+														
+		                                            </h3>
+		                                        </div>
+											
+	                                        <ul class="navLeft-menu">
+	                                            <li><a href="/tsapp/dashboard/pl_fb/index.cfm?fuseaction=c_pro.showHome" ><i class="fa fa-home fa-2x"></i> <span class="text text">Home</span></a></li><li><a href="/tsapp/dashboard/pl_fb/index.cfm?fuseaction=c_pro_calendar.showCalendar" ><i class="fa fa-calendar-week fa-2x"></i> <span class="text text">Calendar</span></a></li><li class='selected'><a href="/tsapp/dashboard/pl_fb/index.cfm?fuseaction=c_pro_assignments.showHome" ><i class="fa fa-pencil-square-o fa-2x"></i> <span class="text text">My Assignments</span></a></li><li><a href="/tsapp/dashboard/pl_fb/index.cfm?fuseaction=c_pro_assignments.showSelfAssign" ><i class="fa fa-pencil fa-2x"></i> <span class="text text">Self-Assign</span></a></li><li><a href="/tsapp/dashboard/pl_fb/index.cfm?fuseaction=c_pro_assignments.showHistory" ><i class="fa fa-check-square-o fa-2x"></i> <span class="text text">My History</span></a></li><li><a href="/tsapp/dashboard/pl_fb/index.cfm?fuseaction=c_pro_credentials.showAllUserCredentials" ><i class="fa fa-certificate fa-2x"></i> <span class="text text">My Credentials</span></a></li><li><a href="/tsapp/SSO/login.cfm?idpid=4ced9e0333438e30c4df41eabfa19206" target="_blank"><i class="fas fa-tasks fa-2x"></i> <span class="text text">My Evaluations</span></a></li><li><a href="/tsapp/dashboard/pl_fb/index.cfm?fuseaction=c_pro_checkit.showHome" target="_blank"><i class="fa fa-check fa-2x"></i> <span class="text text">Vector Check It</span></a></li><li><a href="/tsapp/dashboard/pl_fb/index.cfm?fuseaction=c_pro_events.showHome" ><i class="fa fa-calendar fa-2x"></i> <span class="text text">My Events</span></a></li><li><a href="/tsapp/dashboard/pl_fb/index.cfm?fuseaction=c_pro_documents.documents" ><i class="fa fa-folder-open-o fa-2x"></i> <span class="text text">File Center</span></a></li><li><a href="/tsapp/dashboard/pl_fb/index.cfm?fuseaction=c_pro_communications.showHome" ><i class="fa fa-wechat fa-2x"></i> <span class="text text">Forum</span></a></li> 
+													<hr noshade />
+													<li>
+														<a href="index.cfm?fuseaction=c_pro_assignments.showRcaSelectActivity">
+															<i class="far fa-check-square fa-2x"></i>
+															
+																<span class="text">Record Completions</span>
+															
+														</a>
+													</li>
+	                                            
+	                                        </ul>
+	                                    
+	                                </div><!-- /#navLeft -->
+	                            
+								
+	                            <div id="content">
+									
+	                            	
+	                            	
+<script src="/tsapp/dashboard/pl_fb/library/scripts/jquery.tablesorter.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+
+$(document).ready(function() {
+	var courseInfo = tsapp.modal(
+		{titleText: "Assignment Details",
+		 buttonContinueText: "",
+		 buttonCancelText: "Close"});
+
+	$(".assignmentDetails").click(function(e) {
+		e.preventDefault();
+		courseInfo.open("index.cfm?fuseaction=c_pro_assignments.showAssignmentDetails&transcriptID=" + $(this).attr("transcriptid"), 500, 500);
+	});
+
+	$(".SCORMAssignmentDetails").click(function(e) {
+		e.preventDefault();
+		courseInfo.open("index.cfm?fuseaction=c_pro_assignments.showSCORMAssignmentDetails&transcriptID=" + $(this).attr("transcriptid"), 500, 200);
+	});
+
+	$(".AICCAssignmentDetails").click(function(e) {
+		e.preventDefault();
+		courseInfo.open("index.cfm?fuseaction=c_pro_assignments.showAICCAssignmentDetails&transcriptID=" + $(this).attr("transcriptid"), 500, 200);
+	});
+
+	$("table.data").tablesorter( {
+		headers: {2:{sorter:"MonDYYYY"}, 3:{sorter:"MonDYYYY"}, 6:{sorter:false}},
+		sortList: [[3,0]],
+		cssHeader: "head",
+		widgets: ["zebra"]
+	});
+
+	$(".btnDel").mouseenter(function(e){
+		$( this ).removeClass("icon-16-x-light");
+		$( this ).addClass("icon-16-x-red");
+	});
+
+	$(".btnDel").mouseout(function(e){
+		$( this ).removeClass("icon-16-x-red");
+		$( this ).addClass("icon-16-x-light");
+	});	
+	$(".btnDel").click(function(e){
+		var cid=$(this).attr("cid");
+		var tid=$(this).attr("tid");
+		delConfirm= tsapp.modal({
+			titleText: "Confirm Assignment Removal"
+			,buttonContinueText: "Yes"
+			,buttonCancelText: "No"
+			,callbackContinue: function() {
+				$(".modal-buttons").html('<img src="/tsapp/dashboard/pl_fb/library/images/icons/16x11load.gif" alt="Processing...">');
+				$("#ConfirmMsgContainer").html('<p> Please wait while I remove the assignment. </p>');
+				$.ajax({
+					type:"post"
+					,url:"library/objects/assignments/assignments.cfc"
+					,data: 
+						{ 
+							method: "delete"
+							,tid: tid
+							,cid: cid
+						}
+					,success: function( data )
+						{
+				 			$("#row"+cid).hide();
+							$("#ConfirmMsgContainer").html('<p class="message positive" style="width:275px;height:45px;margin:0;"><span class="icon icon-24 icon-thumbs-up icon-24-thumbs-up"></span> Thank you for waiting! <br> The assignment has been removed. </p>');
+				 			setTimeout(function() { delConfirm.close();}, 4000);				 			
+						}
+					,error: function( objRequest, strError, c )
+						{
+							$("#row"+cid).removeClass("odd");
+							$("#row"+cid).removeClass("even");
+							$("#row"+cid).addClass("negative");
+							$("#ConfirmMsgContainer").html('<p class="message negative" style="width:275px;height:45px;margin:0;"> So sorry!  There has been an issue removing this assignment. </p>');
+							setTimeout(function() { delConfirm.close();}, 4000);
+				 		}
+				});		 
+			}
+		});
+		delConfirm.open("<div id='ConfirmMsgContainer' align='center'><p>Are you sure you want to remove this assignment?</p></div><br>",'auto','auto');
+	});
+});
+
+/* ]]> */
+</script>
+<h1 class="header">My Assignments</h1>
+<table class="pod data">
+	<thead class="labels">
+		<tr>
+			<th>Type</th>
+			<th>Name</th>
+			<th class="text-nowrap">Start Date</th>
+			<th class="text-nowrap">Due Date</th>
+			<th>Status</th>
+			<th>Assigned By</th>
+			<th>Actions</th>
+		</tr>
+	</thead>
+	<tbody class="body">
+		
+				<tr id="row470493483">
+					
+						<td title="Course"><span class="icon-24 icon-24-TS"></span></td>
+						
+							<td><a href="/tsapp/employee_page/courselaunch.cfm?transcriptID=470493483">EMS Assessment and Treatment of Sexual Assault Patients (2363822)</a></td>
+						
+					<td class="text-nowrap">Feb 1, 2025</td>
+					<td class="text-nowrap">Mar 15, 2025</td>
+					<td>Started</td>
+					
+					
+					<td>
+						Victor White 
+					</td>
+					
+					<td>
+						<a 
+							
+								href="#" class="assignmentDetails" transcriptid="470493483"
+							
+							title="Click here to view assignment details"
+						>
+							
+								<span class="icon-16 icon-16-magnify"></span>
+							
+						</a>
+
+						
+					</td>
+				</tr>
+			
+				<tr id="row470493238">
+					
+						<td title="Course"><span class="icon-24 icon-24-TS"></span></td>
+						
+							<td><a href="/tsapp/employee_page/courselaunch.cfm?transcriptID=470493238">EMS Patient Abuse and Assault (15982)</a></td>
+						
+					<td class="text-nowrap">Feb 1, 2025</td>
+					<td class="text-nowrap">Mar 15, 2025</td>
+					<td>Started</td>
+					
+					
+					<td>
+						Victor White 
+					</td>
+					
+					<td>
+						<a 
+							
+								href="#" class="assignmentDetails" transcriptid="470493238"
+							
+							title="Click here to view assignment details"
+						>
+							
+								<span class="icon-16 icon-16-magnify"></span>
+							
+						</a>
+
+						
+					</td>
+				</tr>
+			
+				<tr id="row464441990">
+					
+						<td title="Course"><span class="icon-24 icon-24-TS"></span></td>
+						
+							<td><a href="/tsapp/employee_page/courselaunch.cfm?transcriptID=464441990">NFPA 1001 Firefighter Personal Protective Equipment (2397)</a></td>
+						
+					<td class="text-nowrap">Feb 1, 2025</td>
+					<td class="text-nowrap">Mar 15, 2025</td>
+					<td></td>
+					
+					
+					<td>
+						Victor White 
+					</td>
+					
+					<td>
+						<a 
+							
+								href="#" class="assignmentDetails" transcriptid="464441990"
+							
+							title="Click here to view assignment details"
+						>
+							
+								<span class="icon-16 icon-16-magnify"></span>
+							
+						</a>
+
+						
+					</td>
+				</tr>
+			
+				<tr id="row464444010">
+					
+						<td title="Course"><span class="icon-24 icon-24-TS"></span></td>
+						
+							<td><a href="/tsapp/employee_page/courselaunch.cfm?transcriptID=464444010">Fleet Program Driver Safety Orientation for Emergency Vehicle Operators</a></td>
+						
+					<td class="text-nowrap">Feb 16, 2025</td>
+					<td class="text-nowrap">Mar 31, 2025</td>
+					<td></td>
+					
+					
+					<td>
+						Victor White 
+					</td>
+					
+					<td>
+						<a 
+							
+								href="#" class="assignmentDetails" transcriptid="464444010"
+							
+							title="Click here to view assignment details"
+						>
+							
+								<span class="icon-16 icon-16-magnify"></span>
+							
+						</a>
+
+						
+					</td>
+				</tr>
+			
+				<tr id="row466190016">
+					
+						<td title="Course"><span class="icon-24 icon-24-TS"></span></td>
+						
+							<td><a href="/tsapp/employee_page/courselaunch.cfm?transcriptID=466190016">EMS Aquatic Emergencies (2612528)</a></td>
+						
+					<td class="text-nowrap">Feb 3, 2025</td>
+					<td class="text-nowrap">Apr 1, 2025</td>
+					<td></td>
+					
+					
+					<td>
+						Salvatore Frosceno 
+					</td>
+					
+					<td>
+						<a 
+							
+								href="#" class="assignmentDetails" transcriptid="466190016"
+							
+							title="Click here to view assignment details"
+						>
+							
+								<span class="icon-16 icon-16-magnify"></span>
+							
+						</a>
+
+						
+					</td>
+				</tr>
+			
+				<tr id="row466190772">
+					
+						<td title="Course"><span class="icon-24 icon-24-TS"></span></td>
+						
+							<td><a href="/tsapp/employee_page/courselaunch.cfm?transcriptID=466190772">EMS Assessment and Treatment of Submersion Injuries (2717642)</a></td>
+						
+					<td class="text-nowrap">Feb 10, 2025</td>
+					<td class="text-nowrap">Apr 1, 2025</td>
+					<td></td>
+					
+					
+					<td>
+						Salvatore Frosceno 
+					</td>
+					
+					<td>
+						<a 
+							
+								href="#" class="assignmentDetails" transcriptid="466190772"
+							
+							title="Click here to view assignment details"
+						>
+							
+								<span class="icon-16 icon-16-magnify"></span>
+							
+						</a>
+
+						
+					</td>
+				</tr>
+			
+				<tr id="row466191172">
+					
+						<td title="Course"><span class="icon-24 icon-24-TS"></span></td>
+						
+							<td><a href="/tsapp/employee_page/courselaunch.cfm?transcriptID=466191172">EMS CPR Academic</a></td>
+						
+					<td class="text-nowrap">Feb 17, 2025</td>
+					<td class="text-nowrap">Apr 1, 2025</td>
+					<td></td>
+					
+					
+					<td>
+						Salvatore Frosceno 
+					</td>
+					
+					<td>
+						<a 
+							
+								href="#" class="assignmentDetails" transcriptid="466191172"
+							
+							title="Click here to view assignment details"
+						>
+							
+								<span class="icon-16 icon-16-magnify"></span>
+							
+						</a>
+
+						
+					</td>
+				</tr>
+			
+				<tr id="row464441502">
+					
+						<td title="Course"><span class="icon-24 icon-24-TS"></span></td>
+						
+							<td><a href="/tsapp/employee_page/courselaunch.cfm?transcriptID=464441502">NFPA 1500 Combustible & Flammable Liquids</a></td>
+						
+					<td class="text-nowrap">Mar 1, 2025</td>
+					<td class="text-nowrap">Apr 15, 2025</td>
+					<td></td>
+					
+					
+					<td>
+						Victor White 
+					</td>
+					
+					<td>
+						<a 
+							
+								href="#" class="assignmentDetails" transcriptid="464441502"
+							
+							title="Click here to view assignment details"
+						>
+							
+								<span class="icon-16 icon-16-magnify"></span>
+							
+						</a>
+
+						
+					</td>
+				</tr>
+			
+				<tr id="row464442234">
+					
+						<td title="Course"><span class="icon-24 icon-24-TS"></span></td>
+						
+							<td><a href="/tsapp/employee_page/courselaunch.cfm?transcriptID=464442234">S-190 Introduction to Wildland Fire Behavior (MOD #1)</a></td>
+						
+					<td class="text-nowrap">Jan 1, 2025</td>
+					<td class="text-nowrap">Apr 30, 2025</td>
+					<td></td>
+					
+					
+					<td>
+						Victor White 
+					</td>
+					
+					<td>
+						<a 
+							
+								href="#" class="assignmentDetails" transcriptid="464442234"
+							
+							title="Click here to view assignment details"
+						>
+							
+								<span class="icon-16 icon-16-magnify"></span>
+							
+						</a>
+
+						
+					</td>
+				</tr>
+			
+				<tr id="row464442478">
+					
+						<td title="Course"><span class="icon-24 icon-24-TS"></span></td>
+						
+							<td><a href="/tsapp/employee_page/courselaunch.cfm?transcriptID=464442478">S-190 Introduction to Wildland Fire Behavior (MOD #2)</a></td>
+						
+					<td class="text-nowrap">Jan 1, 2025</td>
+					<td class="text-nowrap">Apr 30, 2025</td>
+					<td></td>
+					
+					
+					<td>
+						Victor White 
+					</td>
+					
+					<td>
+						<a 
+							
+								href="#" class="assignmentDetails" transcriptid="464442478"
+							
+							title="Click here to view assignment details"
+						>
+							
+								<span class="icon-16 icon-16-magnify"></span>
+							
+						</a>
+
+						
+					</td>
+				</tr>
+			
+				<tr id="row464442726">
+					
+						<td title="Course"><span class="icon-24 icon-24-TS"></span></td>
+						
+							<td><a href="/tsapp/employee_page/courselaunch.cfm?transcriptID=464442726">S-190 Introduction to Wildland Fire Behavior (MOD #3)</a></td>
+						
+					<td class="text-nowrap">Jan 1, 2025</td>
+					<td class="text-nowrap">Apr 30, 2025</td>
+					<td></td>
+					
+					
+					<td>
+						Victor White 
+					</td>
+					
+					<td>
+						<a 
+							
+								href="#" class="assignmentDetails" transcriptid="464442726"
+							
+							title="Click here to view assignment details"
+						>
+							
+								<span class="icon-16 icon-16-magnify"></span>
+							
+						</a>
+
+						
+					</td>
+				</tr>
+			
+				<tr id="row464442972">
+					
+						<td title="Course"><span class="icon-24 icon-24-TS"></span></td>
+						
+							<td><a href="/tsapp/employee_page/courselaunch.cfm?transcriptID=464442972">S-190 Introduction to Wildland Fire Behavior (MOD #4)</a></td>
+						
+					<td class="text-nowrap">Jan 1, 2025</td>
+					<td class="text-nowrap">Apr 30, 2025</td>
+					<td></td>
+					
+					
+					<td>
+						Victor White 
+					</td>
+					
+					<td>
+						<a 
+							
+								href="#" class="assignmentDetails" transcriptid="464442972"
+							
+							title="Click here to view assignment details"
+						>
+							
+								<span class="icon-16 icon-16-magnify"></span>
+							
+						</a>
+
+						
+					</td>
+				</tr>
+			
+				<tr id="row466192900">
+					
+						<td title="Course"><span class="icon-24 icon-24-TS"></span></td>
+						
+							<td><a href="/tsapp/employee_page/courselaunch.cfm?transcriptID=466192900">EMS Heat Illness and Emergencies (40850)</a></td>
+						
+					<td class="text-nowrap">Mar 3, 2025</td>
+					<td class="text-nowrap">May 1, 2025</td>
+					<td></td>
+					
+					
+					<td>
+						Salvatore Frosceno 
+					</td>
+					
+					<td>
+						<a 
+							
+								href="#" class="assignmentDetails" transcriptid="466192900"
+							
+							title="Click here to view assignment details"
+						>
+							
+								<span class="icon-16 icon-16-magnify"></span>
+							
+						</a>
+
+						
+					</td>
+				</tr>
+			
+				<tr id="row466193898">
+					
+						<td title="Course"><span class="icon-24 icon-24-TS"></span></td>
+						
+							<td><a href="/tsapp/employee_page/courselaunch.cfm?transcriptID=466193898">EMS Hip and Pelvic Injuries (2462394)</a></td>
+						
+					<td class="text-nowrap">Mar 10, 2025</td>
+					<td class="text-nowrap">May 1, 2025</td>
+					<td></td>
+					
+					
+					<td>
+						Salvatore Frosceno 
+					</td>
+					
+					<td>
+						<a 
+							
+								href="#" class="assignmentDetails" transcriptid="466193898"
+							
+							title="Click here to view assignment details"
+						>
+							
+								<span class="icon-16 icon-16-magnify"></span>
+							
+						</a>
+
+						
+					</td>
+				</tr>
+			
+	</tbody>
+</table>
+
+									
+	                            </div>
+
+	            </div>
+				
+	        </div><!-- /#container -->
+	    </div><!-- /#wrapper -->
+			<div id="footer">
+		    <div class="navbar navbar-inverse">
+		    	<div class="container">
+		        <ul>
+				  <li><a href="http://www.targetsolutions.com" target="_blank"><span class="text">Copyright &copy; 2025</span></a></li>
+		          <li><a href="https://support.vectorlmstargetsolutionsedition.com" target="_blank"><span class="text">Help</span></a></li>
+		          <li><a href="/tsapp/dashboard/pl_fb/index.cfm?fuseaction=c_pro_communications.showSuggestions" target="_blank"><span class="text">Suggestions</span></a></li>
+		          <li><a href="http://www.vectorsolutions.com/resources/blogs/" target="_blank"><span class="text">Blog</span></a></li>
+		          <li><a href="/media/documents/termsofuse.pdf" target="_blank"><span class="text">Terms</span></a></li>
+		          <li><a href="https://www.vectorsolutions.com/privacy-policy/" target="_blank"><span class="text">Privacy</span></a></li>
+		          <li><a><span class="text fa fa-info-circle" title="13/2025-01-02-00-007"></span></a></li>
+				</ul>
+				<ul style="float:right">
+					<li><a href="http://www.targetsolutions.com" target="_blank" class="navbar-brand"><span class="text brand"></span></a></li>
+				</ul>
+		      </div>
+		    </div>
+			</div><!-- /#footer -->
+
+	    
+	    <script>
+	    /* <![CDATA[ */
+	    (function($) {
+	        var me = $('#notificationUser'),
+	            them = $('#notificationAdmin'),
+	            multi = $('#multiLink'),
+	            connect = $("#connectLink");
+
+	        
+	        tsapp.tooltip({
+	            elm: me,
+	            url: me.attr('href'),
+	            uniqueKey: 2,
+	            offset: [15, 15],
+	            callback: function() {
+	                me.removeClass('highlight').find(".badge").text(0);
+	            },
+	            width: 400,
+	            parentClass: 'tooltip tooltip-nova'
+	        });
+
+	        tsapp.tooltip({
+	            elm: them,
+	            url: them.attr('href'),
+	            uniqueKey: 2,
+	            offset: [15, 15],
+	            callback: function() {
+	                them.removeClass('highlight').find(".badge").text(0);
+	            },
+	            width: 400,
+	            parentClass: 'tooltip tooltip-nova'
+	        });
+
+	        
+
+	        
+	        tsapp.session().start();
+	        tsapp.lazyLoader.run();
+
+	        
+	        
+
+
+
+	        $(".dropdown-menu > li > a").bind("click", function(e){
+	            e.preventDefault();
+	            e.stopPropagation();
+	            $(this).closest(".dropdown-menu").find(".dropdown-sub-menu").toggle();
+	        });
+
+	        $(document).click (function(){
+
+	            $(".dropdown-sub-menu").hide();
+
+	        });
+
+			$(".navLeft-menu").tendina();
+
+			$(document).click(function(e){
+			    if (e.target.id != 'nav-mini-calendar'
+			        && $(e.target).parents('#nav-mini-calendar').length == 0
+			        && !$(e.target).hasClass('nav-mini-calendar')
+			    ) {
+			        $('#nav-mini-calendar').hide();
+			    }
+			});
+
+			$( '<div id="nav-mini-calendar" style="display: none;background-color: white;width:200px;height:auto;position:absolute;z-index: 999;color: #444 !important;-moz-border-radius: 6px;border-radius: 6px;padding: 10px 20px;-moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.40);-webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.40);box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.40);">Loading...<img src="/tsapp/dashboard/pl_fb/library/images/icons/16x11load.gif" alt="..Loading.."></div>' ).insertAfter( ".show-mini-calendar" );
+			
+			$(".show-mini-calendar").on("click", function(e){
+			    e.preventDefault();
+			    e.stopPropagation();
+
+				if ($('#nav-mini-calendar').is(':visible')) {
+
+					$('#nav-mini-calendar').hide();
+
+				} else {
+
+					$('#nav-mini-calendar').show();
+
+					if ($('.littleCalendar').length == 0) {
+
+						$.ajax({
+							url: '/tsapp/dashboard/pl_fb/index.cfm?fuseaction=c_pro_calendar.showCalendar&miniNavOnly=true',
+							async: true,
+							type: 'GET',
+							dataType: 'text',
+							data: {  },
+							success: function(data){
+								$("#nav-mini-calendar").html(data);
+							}
+						});
+					};
+				};
+			});
+
+	    }(jQuery));
+	    /* ]]> */
+	    </script>
+	    
+	</body>
+	</html>

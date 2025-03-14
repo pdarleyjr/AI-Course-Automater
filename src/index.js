@@ -5,6 +5,7 @@ const { chromium } = require('@playwright/test');
 const skyvernApi = require('./utils/skyvern-api');
 const langchainUtils = require('./utils/langchain-utils');
 const lmsAutomation = require('./core/lms-automation');
+const targetSolutionsIntegration = require('./integrations/target-solutions-integration');
 
 // Configure logging
 const winston = require('winston');
@@ -83,6 +84,19 @@ async function main() {
     
     // Assess the assignment using LangChain
     const assessment = await langchainUtils.assessAssignment(sampleAssignment);
+    
+    // Check if Target Solutions URL is specified
+    const isTargetSolutions = process.env.LMS_URL && process.env.LMS_URL.includes('targetsolutions');
+    
+    if (isTargetSolutions) {
+      logger.info('Detected Target Solutions LMS. Will use specialized integration.');
+      
+      // Initialize Target Solutions integration
+      logger.info('Testing Target Solutions integration...');
+      
+      // Note: Actual automation would be triggered by the server.js API endpoints
+      logger.info('Target Solutions integration ready for use');
+    }
     logger.info('LangChain assessment of sample assignment:', assessment);
     
     // Generate a response to the assignment

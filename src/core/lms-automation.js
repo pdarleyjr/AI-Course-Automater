@@ -43,6 +43,12 @@ if (!fs.existsSync(screenshotsDir)) {
   fs.mkdirSync(screenshotsDir, { recursive: true });
 }
 
+// Ensure temp directory exists for storing course information
+const tempDir = path.resolve(__dirname, '../../artifacts/temp');
+if (!fs.existsSync(tempDir)) {
+  fs.mkdirSync(tempDir, { recursive: true });
+}
+
 /**
  * Login to the LMS with enhanced anti-bot measures
  * @param {import('playwright').Page} page - Playwright page object
@@ -59,7 +65,7 @@ async function loginToLMS(page, credentials, logCallback = null) {
   try {
     sendLog(`Navigating to LMS: ${config.lms.url}`);
     
-    // Use retry navigation for more reliable page loading
+    // Use retry navigation for more reliable Target Solutions page loading
     const navSuccess = await retryHandler.retryNavigation(
       page,
       async () => {
@@ -80,7 +86,7 @@ async function loginToLMS(page, credentials, logCallback = null) {
     // Wait for login form to be visible
     sendLog('Waiting for login form');
     await page.waitForSelector('input[name="username"]', { timeout: 10000 })
-      .catch(async () => {
+      .catch(async (e) => {
         // If username field not found, try alternative selectors
         sendLog('Username field not found, trying alternative selectors', 'warning');
         await page.waitForSelector('input[type="text"][id*="user"], input[type="text"][id*="email"], input[type="email"]', { timeout: 5000 });
@@ -93,7 +99,8 @@ async function loginToLMS(page, credentials, logCallback = null) {
     const usernameSelector = await page.evaluate(() => {
       const selectors = [
         'input[name="username"]',
-        'input[id*="username"]',
+        'input[id="username"]', // Target Solutions specific
+        'input[id*="username"]', 
         'input[id*="user"]',
         'input[id*="email"]',
         'input[type="email"]',
@@ -113,7 +120,8 @@ async function loginToLMS(page, credentials, logCallback = null) {
     const passwordSelector = await page.evaluate(() => {
       const selectors = [
         'input[name="password"]',
-        'input[id*="password"]',
+        'input[id="password"]', // Target Solutions specific
+        'input[id*="password"]', 
         'input[type="password"]'
       ];
       
@@ -138,7 +146,8 @@ async function loginToLMS(page, credentials, logCallback = null) {
       const selectors = [
         'button[type="submit"]',
         'input[type="submit"]',
-        'button:has-text("Login")',
+        'input[value="Login"]', // Target Solutions specific
+        'button:has-text("Login")', 
         'button:has-text("Sign In")',
         'button:has-text("Log In")',
         'a:has-text("Login")',
@@ -168,7 +177,8 @@ async function loginToLMS(page, credentials, logCallback = null) {
     
     // Try multiple dashboard indicators
     const dashboardSelectors = [
-      '.dashboard',
+      'a:has-text("My Assignments")', // Target Solutions specific
+      '.dashboard', 
       '.home-page',
       '.course-list',
       '.my-courses',
@@ -255,6 +265,88 @@ async function loginToLMS(page, credentials, logCallback = null) {
 }
 
 /**
+ * Navigate to the "My Assignments" page in Target Solutions
+ * @param {import('playwright').Page} page - Playwright page object
+ * @param {Function} logCallback - Callback for sending logs to the client
+ * @returns {Promise<boolean>} - Whether navigation was successful
+ */
+async function navigateToMyAssignments(page, logCallback = null) {
+  const sendLog = (message, type = 'info') => {
+    logger.info(message);
+    if (logCallback) logCallback(message, type);
+  };
+
+  try {
+    sendLog('Navigating to "My Assignments" page');
+    
+    // Look for the "My Assignments" link in the left navigation
+    const myAssignmentsSelectors = [
+      'a:has-text("My Assignments")',
+      'a[href*="assignments.showHome"]',
+      'a[href*="assignments"] i.fa-pencil-square-o',
+      'li a:has-text("My Assignments")'
+    ];
+    
+    let linkClicked = false;
+    
+    for (const selector of myAssignmentsSelectors) {
+      const link = await page.$(selector);
+      if (link) {
+        await retryHandler.retryElementInteraction(
+          page,
+          selector,
+          async () => {
+            await antiBot.humanLikeClick(page, selector);
+          },
+          {
+            maxRetries: 3,
+            initialDelay: 1000
+          },
+          logCallback
+        );
+        
+        linkClicked = true;
+        break;
+      }
+    }
+    
+    if (!linkClicked) {
+      sendLog('Could not find "My Assignments" link, trying direct navigation', 'warning');
+      
+      // Try direct navigation to the assignments page
+      await retryHandler.retryNavigation(
+        page,
+        async () => {
+          await page.goto('/tsapp/dashboard/pl_fb/index.cfm?fuseaction=c_pro_assignments.showHome');
+        },
+        {
+          maxRetries: 3,
+          initialDelay: 1000
+        },
+        logCallback
+      );
+    }
+    
+    // Wait for the assignments table to load
+    await page.waitForSelector('table.pod.data, .examList, h1.header:has-text("My Assignments")', { timeout: 10000 })
+      .catch(() => {
+        sendLog('Assignments table not found, but continuing anyway', 'warning');
+      });
+    
+    // Take a screenshot of the assignments page
+    await page.screenshot({ 
+      path: path.join(screenshotsDir, `my-assignments-${Date.now()}.png`),
+      fullPage: true 
+    });
+    
+    return true;
+  } catch (error) {
+    sendLog(`Failed to navigate to "My Assignments" page: ${error.message}`, 'error');
+    return false;
+  }
+}
+
+/**
  * Navigate to a specific course with enhanced reliability
  * @param {import('playwright').Page} page - Playwright page object
  * @param {string} courseId - ID of the course to navigate to
@@ -272,7 +364,8 @@ async function navigateToCourse(page, courseId, logCallback = null) {
     
     // Navigate to courses page with retry
     const coursesLinkSelectors = [
-      'a[href*="courses"]',
+      'a[href*="courselaunch.cfm"]', // Target Solutions specific
+      'a[href*="courses"]', 
       'a:has-text("Courses")',
       'a:has-text("My Courses")',
       '.courses-link',
@@ -358,7 +451,8 @@ async function navigateToCourse(page, courseId, logCallback = null) {
       `a[href*="course_${courseId}"]`,
       `a[href*="course"][href*="${courseId}"]`,
       `a[data-course-id="${courseId}"]`,
-      `div[data-course-id="${courseId}"] a`
+      `div[data-course-id="${courseId}"] a`,
+      `a[href*="transcriptID=${courseId}"]` // Target Solutions specific
     ];
     
     let courseClicked = false;
@@ -417,7 +511,8 @@ async function navigateToCourse(page, courseId, logCallback = null) {
       '.course-outline',
       '.course-modules',
       '.course-lessons',
-      'div[class*="course-content"]'
+      'div[class*="course-content"]',
+      '#ts-wrapper' // Target Solutions specific
     ];
     
     let courseContentFound = false;
@@ -520,6 +615,113 @@ async function analyzeCourseWithLangChain(page, logCallback = null) {
         sendLog(`Time-gated item: ${item.title || 'Unnamed'} - Available: ${item.availableDate || 'Unknown'}`, 'info');
       }
     }
+    
+    // Extract and store important information for quizzes and exams
+    const tempStorage = {
+      courseTitle: '',
+      courseId: '',
+      courseDescription: '',
+      keyPoints: [],
+      definitions: [],
+      facts: []
+    };
+    
+    // Get course title
+    tempStorage.courseId = await page.evaluate(() => {
+      const wrapper = document.querySelector('#ts-wrapper');
+      return wrapper ? wrapper.getAttribute('data-courseid') : '';
+    });
+    
+    tempStorage.courseTitle = await page.evaluate(() => {
+      const titleElement = document.querySelector('h1, h2, .course-title, .title');
+      return titleElement ? titleElement.textContent.trim() : 'Unknown Course';
+    });
+    
+    sendLog(`Analyzing course: ${tempStorage.courseTitle}`, 'info');
+    
+    // Extract course content for later use in quizzes/exams
+    // Get course description
+    tempStorage.courseDescription = await page.evaluate(() => {
+      const descriptionElement = document.querySelector('.course-description, .description, .overview, #overview');
+      return descriptionElement ? descriptionElement.textContent.trim() : '';
+    });
+    
+    // Extract key points (bold text, headings, etc.)
+    // This will be useful for answering quiz questions
+    tempStorage.keyPoints = await page.evaluate(() => {
+      const keyPointElements = document.querySelectorAll('strong, b, h3, h4, h5, h6, .key-point, .important');
+      const points = [];
+      
+      keyPointElements.forEach(element => {
+        const text = element.textContent.trim();
+        if (text && text.length > 5 && !points.includes(text)) {
+          points.push(text);
+        }
+      });
+      
+      return points;
+    });
+    
+    // Extract definitions (often in definition lists or special formatting)
+    // This will be useful for answering quiz questions
+    tempStorage.definitions = await page.evaluate(() => {
+      const definitions = [];
+      
+      // Check for definition lists
+      const dtElements = document.querySelectorAll('dt');
+      dtElements.forEach(dt => {
+        const term = dt.textContent.trim();
+        const dd = dt.nextElementSibling;
+        if (dd && dd.tagName === 'DD') {
+          const definition = dd.textContent.trim();
+          if (term && definition) {
+            definitions.push({ term, definition });
+          }
+        }
+      });
+      
+      // Check for other common definition patterns
+      const boldElements = document.querySelectorAll('b, strong');
+      boldElements.forEach(bold => {
+        const term = bold.textContent.trim();
+        if (term && bold.nextSibling && bold.nextSibling.textContent) {
+          const definition = bold.nextSibling.textContent.trim();
+          if (definition && definition.length > 10 && !definition.startsWith('<') && !definitions.some(d => d.term === term)) {
+            definitions.push({ term, definition });
+          }
+        }
+      });
+      
+      return definitions;
+    });
+    
+    // Extract any facts or statistics
+    // This will be useful for answering quiz questions
+    tempStorage.facts = await page.evaluate(() => {
+      const factElements = document.querySelectorAll('.fact, .statistic, .data-point');
+      const facts = [];
+      
+      factElements.forEach(element => {
+        const text = element.textContent.trim();
+        if (text && !facts.includes(text)) {
+          facts.push(text);
+        }
+      });
+      
+      return facts;
+    });
+    
+    // Store the extracted information in a temporary file for later use
+    // Save the extracted information to a temporary file
+    const tempDir = path.resolve(__dirname, '../../artifacts/temp');
+    if (!fs.existsSync(tempDir)) {
+      fs.mkdirSync(tempDir, { recursive: true });
+    }
+    
+    const tempFilePath = path.join(tempDir, `course-${tempStorage.courseId || 'unknown'}-info.json`);
+    fs.writeFileSync(tempFilePath, JSON.stringify(tempStorage, null, 2), 'utf8');
+    
+    sendLog(`Saved course information to ${tempFilePath}`, 'info');
     
     return analysis;
   } catch (error) {
@@ -645,7 +847,8 @@ async function completeAssignments(page, courseAnalysis = {}, logCallback = null
     
     // Find all assignment links with enhanced detection
     const assignmentSelectors = [
-      'a[href*="assignments"]',
+      'a[href*="courselaunch.cfm"]', // Target Solutions specific
+      'a[href*="assignments"]', 
       'a[href*="assignment"]',
       'a[href*="quiz"]',
       'a[href*="exam"]',
@@ -732,7 +935,8 @@ async function completeAssignments(page, courseAnalysis = {}, logCallback = null
         '.main-content',
         'div[class*="assignment"]',
         'div[class*="quiz"]',
-        'div[class*="exam"]'
+        'div[class*="exam"]',
+        '#ts-wrapper' // Target Solutions specific
       ];
       
       let assignmentLoaded = false;
@@ -912,8 +1116,30 @@ async function completeAssignments(page, courseAnalysis = {}, logCallback = null
       if (quizInfo.isQuiz) {
         sendLog(`Detected ${quizInfo.isExam ? 'exam' : 'quiz'} assignment`, 'info');
         
+        // Try to load course information from temp file for context
+        let courseContext = '';
+        try {
+          const courseId = await page.evaluate(() => {
+            const wrapper = document.querySelector('#ts-wrapper');
+            return wrapper ? wrapper.getAttribute('data-courseid') : '';
+          });
+          
+          if (courseId) {
+            const tempFilePath = path.join(tempDir, `course-${courseId}-info.json`);
+            if (fs.existsSync(tempFilePath)) {
+              const tempData = JSON.parse(fs.readFileSync(tempFilePath, 'utf8'));
+              courseContext = `Course Title: ${tempData.courseTitle}\n\nCourse Description: ${tempData.courseDescription}\n\nKey Points:\n${tempData.keyPoints.join('\n')}\n\nDefinitions:\n${tempData.definitions.map(d => `${d.term}: ${d.definition}`).join('\n')}\n\nFacts:\n${tempData.facts.join('\n')}`;
+              sendLog('Loaded course information from temp file for quiz context', 'info');
+            }
+          }
+        } catch (tempError) {
+          sendLog(`Warning: Could not load course information: ${tempError.message}`, 'warning');
+          // Use course analysis as fallback
+          courseContext = courseAnalysis.courseDescription || '';
+        }
+        
         // Complete the quiz
-        const quizResult = await quizHandler.completeQuiz(page, courseAnalysis.courseDescription || '', logCallback);
+        const quizResult = await quizHandler.completeQuiz(page, courseContext, logCallback);
         
         if (quizResult.success) {
           sendLog(`Successfully completed ${quizInfo.isExam ? 'exam' : 'quiz'}: ${assignmentName}`, 'success');
@@ -1046,14 +1272,120 @@ async function completeAssignments(page, courseAnalysis = {}, logCallback = null
             }
           }
         } else {
-          // Handle other assignment types or unknown types
-          sendLog('Unknown assignment type, cannot complete automatically', 'warning');
+          // For Target Solutions, check for "Next" button to navigate through content
+          const nextButtonSelectors = [
+            '#nextA',
+            'a:has-text("Next")',
+            'button:has-text("Next")',
+            '.next-button',
+            '.btn-next'
+          ];
           
-          // Take a screenshot for analysis
-          await page.screenshot({ 
-            path: path.join(screenshotsDir, `unknown-assignment-${Date.now()}.png`),
-            fullPage: true 
-          });
+          let hasNextButton = false;
+          
+          for (const selector of nextButtonSelectors) {
+            const nextButton = await page.$(selector);
+            if (nextButton) {
+              hasNextButton = true;
+              
+              // Check if the button is enabled
+              const isDisabled = await nextButton.evaluate(el => {
+                return el.disabled || 
+                       el.getAttribute('aria-disabled') === 'true' || 
+                       el.classList.contains('disabled') ||
+                       el.href === '#' ||
+                       getComputedStyle(el).opacity < 0.5;
+              });
+              
+              if (!isDisabled) {
+                sendLog('Clicking "Next" button to navigate through content', 'info');
+                await antiBot.humanLikeClick(page, selector);
+                
+                // Wait for the next page to load
+                await page.waitForTimeout(2000);
+                
+                // Continue navigating through content
+                let continueNavigation = true;
+                let navigationCount = 1;
+                
+                while (continueNavigation && navigationCount < 50) { // Limit to 50 pages to avoid infinite loops
+                  // Handle time-gated content on this page
+                  await handleTimeGatedContent(page, logCallback);
+                  
+                  // Check for quiz content
+                  const pageQuizInfo = await quizHandler.detectQuizContent(page, logCallback);
+                  
+                  if (pageQuizInfo.isQuiz) {
+                    sendLog(`Detected quiz on page ${navigationCount}`, 'info');
+                    
+                    // Complete the quiz
+                    const pageQuizResult = await quizHandler.completeQuiz(page, courseAnalysis.courseDescription || '', logCallback);
+                    
+                    if (pageQuizResult.success) {
+                      sendLog(`Successfully completed quiz on page ${navigationCount}`, 'success');
+                    } else {
+                      sendLog(`Failed to complete quiz on page ${navigationCount}: ${pageQuizResult.error || 'Unknown error'}`, 'error');
+                    }
+                  }
+                  
+                  // Check if there's still a next button
+                  let nextButtonFound = false;
+                  
+                  for (const selector of nextButtonSelectors) {
+                    const nextBtn = await page.$(selector);
+                    if (nextBtn) {
+                      // Check if the button is enabled
+                      const btnDisabled = await nextBtn.evaluate(el => {
+                        return el.disabled || 
+                               el.getAttribute('aria-disabled') === 'true' || 
+                               el.classList.contains('disabled') ||
+                               el.href === '#' ||
+                               getComputedStyle(el).opacity < 0.5;
+                      });
+                      
+                      if (!btnDisabled) {
+                        sendLog(`Clicking "Next" button on page ${navigationCount}`, 'info');
+                        await antiBot.humanLikeClick(page, selector);
+                        nextButtonFound = true;
+                        navigationCount++;
+                        
+                        // Wait for the next page to load
+                        await page.waitForTimeout(2000);
+                        break;
+                      }
+                    }
+                  }
+                  
+                  if (!nextButtonFound) {
+                    sendLog('No more "Next" buttons found, reached end of content', 'info');
+                    continueNavigation = false;
+                    completedCount++;
+                  }
+                }
+              } else {
+                sendLog('"Next" button is disabled, waiting for it to become enabled', 'info');
+                
+                // Wait for the button to become enabled
+                await timeGatedHandler.waitForNextButtonEnabled(page, logCallback, 60000);
+                
+                // Try clicking again
+                await antiBot.humanLikeClick(page, selector);
+              }
+              
+              break;
+            }
+          }
+          
+          if (!hasNextButton) {
+            // Handle other assignment types or unknown types
+            sendLog('Unknown assignment type, cannot complete automatically', 'warning');
+            
+            // Take a screenshot for analysis
+            await page.screenshot({ 
+              path: path.join(screenshotsDir, `unknown-assignment-${Date.now()}.png`),
+              fullPage: true 
+            });
+          }
         }
       }
       
@@ -1085,6 +1417,30 @@ async function completeAssignments(page, courseAnalysis = {}, logCallback = null
     }
     
     sendLog(`Completed ${completedCount} assignments`, 'success');
+    
+    // Clean up temporary data after completion
+    if (completedCount > 0) {
+      try {
+        // Remove temporary files for this course
+        const courseId = await page.evaluate(() => {
+          const wrapper = document.querySelector('#ts-wrapper');
+          return wrapper ? wrapper.getAttribute('data-courseid') : '';
+        });
+        
+        if (courseId) {
+          const tempFilePath = path.join(tempDir, `course-${courseId}-info.json`);
+          
+          if (fs.existsSync(tempFilePath)) {
+            fs.unlinkSync(tempFilePath);
+            sendLog(`Removed temporary data file: ${tempFilePath}`, 'info');
+          }
+        }
+      } catch (cleanupError) {
+        sendLog(`Warning: Failed to clean up temporary data: ${cleanupError.message}`, 'warning');
+        // Non-critical error, don't affect the result
+      }
+    }
+    
     return completedCount;
   } catch (error) {
     sendLog(`Error completing assignments: ${error.message}`, 'error');
@@ -1111,6 +1467,132 @@ async function completeAssignments(page, courseAnalysis = {}, logCallback = null
 }
 
 /**
+ * Process multiple assignments in parallel when possible
+ * @param {import('playwright').BrowserContext} context - Playwright browser context
+ * @param {Array} assignmentLinks - Array of assignment links to process
+ * @param {Function} logCallback - Callback for sending logs to the client
+ * @returns {Promise<number>} - Number of assignments completed
+ */
+async function processMultipleAssignments(context, assignmentLinks, logCallback = null) {
+  const sendLog = (message, type = 'info') => {
+    logger.info(message);
+    if (logCallback) logCallback(message, type);
+  };
+
+  try {
+    sendLog(`Preparing to process ${assignmentLinks.length} assignments`, 'info');
+    
+    // Sort assignments by due date (earliest first)
+    const sortedAssignments = await Promise.all(assignmentLinks.map(async (link) => {
+      const text = await link.textContent();
+      const href = await link.evaluate(el => el.href);
+      const transcriptId = href.match(/transcriptID=(\d+)/)?.[1] || '';
+      
+      // Try to extract due date from the row
+      const row = await link.evaluate(el => {
+        let current = el;
+        while (current && current.tagName !== 'TR') {
+          current = current.parentElement;
+        }
+        return current;
+      });
+      
+      let dueDate = new Date(9999, 11, 31); // Default to far future
+      
+      if (row) {
+        const dueDateText = await row.evaluate(tr => {
+          const dueDateCell = tr.querySelector('td:nth-child(4)');
+          return dueDateCell ? dueDateCell.textContent.trim() : '';
+        });
+        
+        if (dueDateText) {
+          dueDate = new Date(dueDateText);
+          if (isNaN(dueDate.getTime())) {
+            dueDate = new Date(9999, 11, 31); // Invalid date, use default
+          }
+        }
+      }
+      
+      return { link, text, transcriptId, dueDate };
+    }));
+    
+    // Sort by due date (earliest first)
+    sortedAssignments.sort((a, b) => a.dueDate - b.dueDate);
+    
+    sendLog(`Assignments sorted by due date. Processing in order.`, 'info');
+    
+    // Determine how many assignments to process in parallel
+    // Start with 1 and increase based on system capabilities
+    const maxConcurrent = Math.min(
+      sortedAssignments.length,
+      2 // Start with max 2 concurrent assignments
+    );
+    
+    sendLog(`Will process up to ${maxConcurrent} assignments concurrently`, 'info');
+    
+    let completedCount = 0;
+    let inProgress = 0;
+    const completionPromises = [];
+    
+    // Process assignments in batches
+    for (let i = 0; i < sortedAssignments.length; i++) {
+      const assignment = sortedAssignments[i];
+      
+      // Wait if we've reached the maximum concurrent assignments
+      if (inProgress >= maxConcurrent) {
+        await Promise.race(completionPromises);
+      }
+      
+      // Create a new page for this assignment
+      const page = await context.newPage();
+      
+      // Increment in-progress counter
+      inProgress++;
+      
+      // Process this assignment
+      sendLog(`Starting assignment: ${assignment.text} (due: ${assignment.dueDate.toLocaleDateString()})`, 'info');
+      
+      // Create a promise for this assignment's completion
+      const completionPromise = (async () => {
+        try {
+          // Navigate to the assignment
+          await page.goto(await assignment.link.evaluate(el => el.href));
+          
+          // Wait for page to load
+          await page.waitForLoadState('domcontentloaded');
+          
+          // Handle the assignment
+          const courseAnalysis = await analyzeCourseWithLangChain(page, logCallback);
+          await handleTimeGatedContent(page, logCallback);
+          const completed = await completeAssignments(page, courseAnalysis, logCallback);
+          
+          completedCount += completed;
+          inProgress--;
+          
+          // Close this page when done
+          await page.close();
+        } catch (error) {
+          sendLog(`Error processing assignment ${assignment.text}: ${error.message}`, 'error');
+          inProgress--;
+          await page.close();
+        }
+      })();
+      
+      completionPromises.push(completionPromise);
+    }
+    
+    // Wait for all assignments to complete
+    await Promise.all(completionPromises);
+    
+    sendLog(`Completed ${completedCount} assignments in parallel mode`, 'success');
+    return completedCount;
+  } catch (error) {
+    sendLog(`Error in parallel assignment processing: ${error.message}`, 'error');
+    return 0;
+  }
+}
+
+/**
  * Run the full LMS automation process with enhanced capabilities
  * @param {import('playwright').Page} page - Playwright page object
  * @param {Object} credentials - User credentials
@@ -1129,15 +1611,66 @@ async function runAutomation(page, credentials, logCallback = null) {
     // Apply anti-bot stealth measures to the browser context
     await antiBot.applyStealthMeasures(page.context());
     
+    // Create temporary storage directory if it doesn't exist
+    fs.mkdirSync(path.resolve(__dirname, '../../artifacts/temp'), { recursive: true });
+    
     // Login to the LMS
     const loginSuccess = await loginToLMS(page, credentials, logCallback);
     if (!loginSuccess) {
       throw new Error('Failed to login to LMS');
     }
     
+    // First navigate to the My Assignments page
+    const myAssignmentsSuccess = await navigateToMyAssignments(page, logCallback);
+    if (!myAssignmentsSuccess) {
+      sendLog('Failed to navigate to My Assignments page, but will try to continue', 'warning');
+    } else {
+      sendLog('Successfully navigated to My Assignments page', 'success');
+    }
+    
     // Process each course
     let totalCompleted = 0;
     const courseResults = [];
+
+    // Check if we should process assignments directly from My Assignments page
+    if (myAssignmentsSuccess) {
+      sendLog('Checking for assignments on My Assignments page', 'info');
+      
+      // Find all assignment links
+      const assignmentLinks = await page.$$('a[href*="courselaunch.cfm"]');
+      
+      if (assignmentLinks.length > 0) {
+        sendLog(`Found ${assignmentLinks.length} assignments on My Assignments page`, 'info');
+        
+        // Check if we should process assignments in parallel
+        if (assignmentLinks.length > 1) {
+          sendLog('Multiple assignments found. Checking if parallel processing is possible...', 'info');
+          
+          // Get the browser context
+          const context = page.context();
+          
+          // Process assignments in parallel if there are multiple
+          const parallelCompleted = await processMultipleAssignments(context, assignmentLinks, logCallback);
+          
+          if (parallelCompleted > 0) {
+            sendLog(`Successfully completed ${parallelCompleted} assignments in parallel mode`, 'success');
+            totalCompleted += parallelCompleted;
+            
+            // Return results
+            return {
+              success: true,
+              totalAssignmentsCompleted: totalCompleted,
+              courseResults: [{
+                courseId: 'multiple',
+                courseTitle: 'Multiple Assignments',
+                assignmentsCompleted: parallelCompleted,
+                success: true
+              }]
+            };
+          }
+        }
+      }
+    }
     
     // Get course IDs from config or credentials
     const courseIds = credentials.courseIds || config.lms.courseIds || [];
@@ -1145,7 +1678,7 @@ async function runAutomation(page, credentials, logCallback = null) {
     if (courseIds.length === 0) {
       sendLog('No course IDs specified, attempting to detect available courses', 'warning');
       
-      // Try to detect available courses
+      // Try to detect available courses from the My Assignments page
       const detectedCourseIds = await page.evaluate(() => {
         const courseLinks = document.querySelectorAll('a[href*="course"]');
         const ids = new Set();
@@ -1165,7 +1698,28 @@ async function runAutomation(page, credentials, logCallback = null) {
         sendLog(`Detected ${detectedCourseIds.length} courses: ${detectedCourseIds.join(', ')}`, 'info');
         courseIds.push(...detectedCourseIds);
       } else {
-        sendLog('Could not detect any courses', 'error');
+        // Try Target Solutions specific detection
+        const targetSolutionsAssignments = await page.evaluate(() => {
+          const assignmentLinks = document.querySelectorAll('a[href*="transcriptID"]');
+          const ids = [];
+          
+          assignmentLinks.forEach(link => {
+            const href = link.href;
+            const match = href.match(/transcriptID=(\d+)/i);
+            if (match && match[1]) {
+              ids.push(match[1]);
+            }
+          });
+          
+          return ids;
+        });
+        
+        if (targetSolutionsAssignments.length > 0) {
+          sendLog(`Detected ${targetSolutionsAssignments.length} Target Solutions assignments: ${targetSolutionsAssignments.join(', ')}`, 'info');
+          courseIds.push(...targetSolutionsAssignments);
+        } else {
+          sendLog('Could not detect any courses', 'error');
+        }
       }
     }
     
@@ -1198,6 +1752,22 @@ async function runAutomation(page, credentials, logCallback = null) {
           error: 'Failed to navigate to course'
         });
       }
+    }
+    
+    // Clean up any remaining temporary files
+    try {
+      const tempDir = path.resolve(__dirname, '../../artifacts/temp');
+      if (fs.existsSync(tempDir)) {
+        const tempFiles = fs.readdirSync(tempDir);
+        for (const file of tempFiles) {
+          if (file.startsWith('course-') && file.endsWith('-info.json')) {
+            fs.unlinkSync(path.join(tempDir, file));
+            sendLog(`Cleaned up temporary file: ${file}`, 'info');
+          }
+        }
+      }
+    } catch (cleanupError) {
+      sendLog(`Warning: Failed to clean up some temporary files: ${cleanupError.message}`, 'warning');
     }
     
     sendLog(`LMS automation completed. Total assignments completed: ${totalCompleted}`, 'success');
@@ -1308,9 +1878,11 @@ async function runLMSAutomation(credentials = {}, logCallback = null) {
 module.exports = {
   loginToLMS,
   navigateToCourse,
+  navigateToMyAssignments,
   completeAssignments,
   analyzeCourseWithLangChain,
   handleTimeGatedContent,
   runAutomation,
   runLMSAutomation,
+  processMultipleAssignments
 };

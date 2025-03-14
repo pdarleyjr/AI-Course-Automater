@@ -21,7 +21,7 @@ module.exports = {
   
   // LMS configuration (customize for your specific LMS)
   lms: {
-    url: process.env.LMS_URL || 'https://example-lms.com',
+    url: process.env.LMS_URL || 'https://app.targetsolutions.com/auth/index.cfm?action=login.showloginone&customerid=0&customerpath=login&msg=',
     username: process.env.LMS_USERNAME,
     password: process.env.LMS_PASSWORD,
     courseIds: (process.env.COURSE_IDS || '').split(',').filter(Boolean),

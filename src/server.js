@@ -13,6 +13,7 @@ const path = require('path');
 const skyvernApi = require('./utils/skyvern-api');
 const langchainUtils = require('./utils/langchain-utils');
 const lmsAutomation = require('./core/lms-automation');
+const targetSolutionsIntegration = require('./integrations/target-solutions-integration');
 
 // Configure logging
 const logger = winston.createLogger({
@@ -247,6 +248,65 @@ async function runAutomation(sessionId, credentials) {
       sendLog(socketId, message, type || 'info');
     });
     
+    // If Target Solutions URL is specified, use the Target Solutions integration
+    if (process.env.LMS_URL && process.env.LMS_URL.includes('targetsolutions')) {
+      sendLog(socketId, 'Detected Target Solutions LMS. Using specialized integration...', 'info');
+      
+      // Use parallel processing if enabled
+      if (process.env.PARALLEL_ASSIGNMENTS !== 'false') {
+        return await targetSolutionsIntegration.runParallelTargetSolutionsAutomation(credentials, 2, (message, type) => {
+          sendLog(socketId, message, type || 'info');
+        });
+      }
+      
+      return await targetSolutionsIntegration.runTargetSolutionsAutomation(credentials, (message, type) => {
+        sendLog(socketId, message, type || 'info');
+      });
+    }
+    
+    // Return the result from the standard LMS automation
+    return result;
+  } catch (error) {
+    // Update session status
+    session.status = 'error';
+    session.error = error.message;
+    session.endTime = new Date();
+    activeSessions.set(sessionId, session);
+    
+    // Rethrow error to be handled by caller
+    throw error;
+  }
+}
+
+/**
+ * Run the automation process with enhanced capabilities for Target Solutions
+ * @param {string} sessionId - Session ID
+ * @param {Object} credentials - User credentials
+ */
+async function runTargetSolutionsAutomation(sessionId, credentials) {
+  const session = activeSessions.get(sessionId);
+  if (!session) {
+    throw new Error(`Session ${sessionId} not found`);
+  }
+  
+  const { socketId, username, apiKey } = session;
+  
+  try {
+    // Update session status
+    session.status = 'running';
+    activeSessions.set(sessionId, session);
+    
+    // Check Skyvern API status
+    sendLog(socketId, 'Checking Skyvern API status...', 'info');
+    const apiStatus = await skyvernApi.getApiStatus();
+    sendLog(socketId, `Skyvern API status: ${JSON.stringify(apiStatus)}`, 'info');
+    
+    // Run the Target Solutions automation
+    sendLog(socketId, 'Starting Target Solutions automation...', 'info');
+    const result = await targetSolutionsIntegration.runTargetSolutionsAutomation(credentials, (message, type) => {
+      sendLog(socketId, message, type || 'info');
+    });
+    
     // Complete automation
     sendLog(socketId, 'Automation completed successfully!', 'success');
     
@@ -356,6 +416,14 @@ app.post('/api/start', async (req, res) => {
         error: 'No WebSocket connection',
         details: 'Client must establish a WebSocket connection before starting automation'
       });
+    }
+    
+    // Check if Target Solutions URL is specified
+    const isTargetSolutions = process.env.LMS_URL && process.env.LMS_URL.includes('targetsolutions');
+    
+    // Log the detected LMS type
+    if (isTargetSolutions) {
+      logger.info('Detected Target Solutions LMS. Will use specialized integration.');
     }
     
     // Start automation
