@@ -43,6 +43,27 @@ module.exports = {
     
     // Whether to record videos during automation
     recordVideos: process.env.RECORD_VIDEOS !== 'false',
+    
+    // Anti-bot detection settings
+    antiBot: {
+      // Whether to apply stealth measures
+      applyStealth: process.env.APPLY_STEALTH !== 'false',
+      
+      // Whether to use human-like interactions
+      humanLikeInteractions: process.env.HUMAN_LIKE_INTERACTIONS !== 'false',
+      
+      // Whether to randomize delays
+      randomizeDelays: process.env.RANDOMIZE_DELAYS !== 'false'
+    },
+    
+    // Time-gated content settings
+    timeGated: {
+      // Whether to speed up videos when possible
+      speedUpVideos: process.env.SPEED_UP_VIDEOS === 'true',
+      
+      // Maximum time to wait for time-gated content (in milliseconds)
+      maxWaitTime: parseInt(process.env.MAX_WAIT_TIME || '3600000', 10) // Default: 1 hour
+    }
   },
   
   // Logging configuration

@@ -243,8 +243,8 @@ async function runAutomation(sessionId, credentials) {
     
     // Run the LMS automation
     sendLog(socketId, 'Starting LMS automation...', 'info');
-    await lmsAutomation.runAutomation(page, credentials, (message, type) => {
-      sendLog(socketId, message, type);
+    const result = await lmsAutomation.runLMSAutomation(credentials, (message, type) => {
+      sendLog(socketId, message, type || 'info');
     });
     
     // Complete automation
