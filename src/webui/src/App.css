@@ -1,0 +1,110 @@
+/* Global styles for the terminal-themed UI */
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #0c0c0c;
+  color: #00ff00;
+  font-family: 'Courier New', monospace;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar for terminal feel */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0c0c0c;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Terminal text selection */
+::selection {
+  background: rgba(0, 255, 0, 0.3);
+  color: #fff;
+}
+
+/* Terminal cursor animation */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.terminal-cursor {
+  display: inline-block;
+  width: 10px;
+  height: 18px;
+  background-color: #00ff00;
+  margin-left: 2px;
+  animation: blink 1s step-end infinite;
+}
+
+/* Terminal text colors */
+.text-success {
+  color: #55ff55;
+}
+
+.text-error {
+  color: #ff5555;
+}
+
+.text-warning {
+  color: #ffff55;
+}
+
+.text-info {
+  color: #5555ff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .terminal-container {
+    width: 95%;
+    height: 400px;
+  }
+}
+
+/* ASCII art title styling */
+.ascii-title {
+  font-size: 12px;
+  line-height: 1.2;
+  white-space: pre;
+  text-align: center;
+  margin: 20px 0;
+  color: #00ff00;
+}
+
+/* Focus styles for accessibility */
+:focus {
+  outline: 2px solid #00ff00;
+  outline-offset: 2px;
+}
+
+/* Button focus styles */
+button:focus {
+  outline: 2px solid #00ff00;
+  outline-offset: 2px;
+}
+
+/* Input focus styles */
+input:focus {
+  outline: none;
+  border-color: #00ff00;
+  box-shadow: 0 0 0 2px rgba(0, 255, 0, 0.2);
+}
+
+/* Disable default browser outline */
+:focus:not(:focus-visible) {
+  outline: none;
+}

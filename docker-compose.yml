@@ -145,3 +145,25 @@ services:
         condition: service_healthy
     # Install Python dependencies and keep container running
     command: bash -c "pip install -U langchain langchain-openai playwright && python -m playwright install && tail -f /dev/null"
+
+  # Terminal-themed React Web UI for authentication
+  webui:
+    build:
+      context: ./src/webui
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    volumes:
+      - ./src/webui:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=production
+      - REACT_APP_API_URL=http://localhost:8000/api
+    depends_on:
+      - playwright
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:80"]
+      interval: 10s
+      timeout: 5s
+      retries: 3

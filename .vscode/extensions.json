@@ -1,6 +1,7 @@
 {
     "recommendations": [
         "rooveterinaryinc.roo-cline",
-        "ms-vscode.remote-repositories"
+        "ms-vscode.remote-repositories",
+        "alessandrobenassi.cloudflare-devtools"
     ]
 }
