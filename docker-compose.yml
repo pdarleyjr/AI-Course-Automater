@@ -1,0 +1,84 @@
+services:
+  # Existing services
+  hello:
+    image: 'hello-world'
+    restart: "no"
+  
+  app:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+  
+  # Skyvern services
+  postgres:
+    image: postgres:14-alpine
+    restart: always
+    # comment out if you want to externally connect DB
+    # ports:
+    #   - 5432:5432
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_USER=skyvern
+      - POSTGRES_PASSWORD=skyvern
+      - POSTGRES_POSTGRES_DB=skyvern
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U skyvern"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  skyvern:
+    image: public.ecr.aws/skyvern/skyvern:latest
+    restart: on-failure
+    # comment out if you want to externally call skyvern API
+    ports:
+      - 8000:8000
+    volumes:
+      - ./artifacts:/data/artifacts
+      - ./videos:/data/videos
+      - ./har:/data/har
+      - ./log:/data/log
+      - ./.streamlit:/app/.streamlit
+    environment:
+      - DATABASE_STRING=postgresql+psycopg://skyvern:skyvern@postgres:5432/skyvern
+      - BROWSER_TYPE=chromium-headful
+      - ENABLE_OPENAI=true
+      - LLM_KEY=OPENAI_GPT4O
+      - OPENAI_API_KEY=<your_openai_key>
+      # If you want to use other LLM provider, like azure and anthropic:
+      # - ENABLE_ANTHROPIC=true
+      # - LLM_KEY=ANTHROPIC_CLAUDE3.5_SONNET
+      # - ANTHROPIC_API_KEY=<your_anthropic_key>
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "test", "-f", "/app/.streamlit/secrets.toml"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  skyvern-ui:
+    image: public.ecr.aws/skyvern/skyvern-ui:latest
+    restart: on-failure
+    ports:
+      - 8080:8080
+      - 9090:9090
+    volumes:
+      - ./artifacts:/data/artifacts
+      - ./videos:/data/videos
+      - ./har:/data/har
+      - ./.streamlit:/app/.streamlit
+    environment:
+      - VITE_WSS_BASE_URL=ws://localhost:8000/api/v1
+    depends_on:
+      skyvern:
+        condition: service_healthy
